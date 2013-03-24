@@ -1,0 +1,46 @@
+project.ext.programmingLibDir = "../build/dist/programming/dist/lib"
+
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: "dist/lib", include: '*.jar')
+    compile 'org.codehaus.groovy:groovy-all:2.0.5'
+    compile 'org.slf4j:slf4j-api:1.5.3' // used by jetty
+}
+
+task libs(type: Sync) {
+    from project.ext.programmingLibDir
+    into "dist/lib"
+}
+compileJava.dependsOn(libs)
+compileGroovy.dependsOn(libs)
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.4'
+}
+
+def ProActiveTask = {
+    classpath = sourceSets.main.runtimeClasspath
+    jvmArgs '-Djava.security.manager', '-Djava.security.policy=src/main/resources/proactive.java.policy', '-Dlog4j.configuration="file:./src/main/resources/log4j.properties'
+}
+
+task WhereIsWallyJava(dependsOn: 'classes', type: JavaExec, group: 'Run') {
+    main = 'blog1.WhereIsWally'
+    configure ProActiveTask
+}
+
+task WhereIsWallyGroovy(dependsOn: 'classes', type: JavaExec, group: 'Run') {
+    main = 'blog1.where_is_wally'
+    configure ProActiveTask
+}
+
+task WallyMeetsClosure(dependsOn: 'classes', type: JavaExec, group: 'Run') {
+    main = 'blog1.wally_meets_closure'
+    configure ProActiveTask
+}
