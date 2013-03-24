@@ -32,15 +32,18 @@ def ProActiveTask = {
 
 task WhereIsWallyJava(dependsOn: 'classes', type: JavaExec, group: 'Run') {
     main = 'blog1.WhereIsWally'
+    description = 'Run WhereIsWally, Java code deploying a remote node, creating a remote active object and running code remotely'
     configure ProActiveTask
 }
 
 task WhereIsWallyGroovy(dependsOn: 'classes', type: JavaExec, group: 'Run') {
     main = 'blog1.where_is_wally'
+    description = 'Run WhereIsWally, Groovy code deploying a remote node, creating a remote active object and running code remotely'
     configure ProActiveTask
 }
 
 task WallyMeetsClosure(dependsOn: 'classes', type: JavaExec, group: 'Run') {
     main = 'blog1.wally_meets_closure'
+    description = 'Run WhereIsWally, Groovy code demonstrating the execution of a remote closure'
     configure ProActiveTask
 }
