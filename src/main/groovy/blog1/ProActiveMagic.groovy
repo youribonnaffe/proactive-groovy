@@ -34,23 +34,23 @@ class ProActiveMagic {
     }
 
     static class OneNodeDeployment {
-        static GCMVirtualNode node;
-        static GCMApplication gcmApp;
+        static GCMVirtualNode node
+        static GCMApplication gcmApp
 
         static void start() {
-            gcmApp = PAGCMDeployment.loadApplicationDescriptor(new File("src/main/resources/LocalDeployment.xml"));
-            gcmApp.startDeployment();
-            gcmApp.waitReady();
-            node = gcmApp.getVirtualNodes().values().iterator().next();
+            gcmApp = PAGCMDeployment.loadApplicationDescriptor(new File("src/main/resources/LocalDeployment.xml"))
+            gcmApp.startDeployment()
+            gcmApp.waitReady()
+            node = gcmApp.getVirtualNodes().values().iterator().next()
         }
 
         static void stop(Object activeObject) {
-            PAActiveObject.terminateActiveObject(activeObject, true);
-            gcmApp.kill();
+            PAActiveObject.terminateActiveObject(activeObject, true)
+            gcmApp.kill()
         }
 
         static def active(Class clazz) {
-            return PAActiveObject.newActive(clazz.getName(), null, node.getANode());
+            return PAActiveObject.newActive(clazz.getName(), null, node.getANode())
         }
     }
 }
