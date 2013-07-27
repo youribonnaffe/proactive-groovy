@@ -1,6 +1,9 @@
 package blog1
 
 import org.objectweb.proactive.api.PAActiveObject
+import org.objectweb.proactive.api.PALifeCycle
+import org.objectweb.proactive.core.body.future.Future
+import org.objectweb.proactive.core.mop.StubObject
 import org.objectweb.proactive.extensions.gcmdeployment.PAGCMDeployment
 import org.objectweb.proactive.gcmdeployment.GCMApplication
 import org.objectweb.proactive.gcmdeployment.GCMVirtualNode
@@ -8,28 +11,26 @@ import org.objectweb.proactive.gcmdeployment.GCMVirtualNode
 class ProActiveMagic {
 
     static void remote(Class clazz, Closure closure) {
-        ProActiveMagic.OneNodeDeployment.start()
-        def ao = ProActiveMagic.OneNodeDeployment.active(clazz)
+        OneNodeDeployment.start()
+        def ao = OneNodeDeployment.active(clazz)
         try {
-            use(ProActiveMagic.OneNodeDeployment) {
-                closure(ao)
-            }
+            closure(ao)
         } finally {
-            ProActiveMagic.OneNodeDeployment.stop(ao)
+            OneNodeDeployment.stop(ao)
+            PALifeCycle.exitSuccess()
         }
     }
 
     static def remote(Closure closure) {
-        ProActiveMagic.OneNodeDeployment.start()
-        def ao = ProActiveMagic.OneNodeDeployment.active(RemoteClosure.class)
+        OneNodeDeployment.start()
+        RemoteClosure ao = OneNodeDeployment.active(RemoteClosure.class)
         try {
-            return ao.call(closure.dehydrate())
+            def dehydrated = closure.dehydrate()
+            def result = ao.call(dehydrated)
+            Future f = (Future) (((StubObject) result).getProxy());
+            return f.getResult()
         } finally {
-            try {
-                ProActiveMagic.OneNodeDeployment.stop(ao)
-            } catch (Throwable t) {
-                t.printStackTrace()
-            }
+            OneNodeDeployment.stop(ao)
         }
     }
 
@@ -45,12 +46,16 @@ class ProActiveMagic {
         }
 
         static void stop(Object activeObject) {
-            PAActiveObject.terminateActiveObject(activeObject, true)
-            gcmApp.kill()
+            try {
+                PAActiveObject.terminateActiveObject(activeObject, true)
+                gcmApp.kill()
+            } catch (ignored) {
+                // silent error
+            }
         }
 
-        static def active(Class clazz) {
-            return PAActiveObject.newActive(clazz.getName(), null, node.getANode())
+        static <T> T active(Class<T> clazz) {
+            return PAActiveObject.newActive(clazz.getName(), null, node.getANode()) as T
         }
     }
 }

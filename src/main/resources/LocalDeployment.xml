@@ -2,14 +2,19 @@
 <GCMApplication xmlns="urn:gcm:application:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="urn:gcm:application:1.0 http://proactive.inria.fr/schemas/gcm/1.0/ApplicationDescriptorSchema.xsd">
 
+    <environment>
+        <javaPropertyVariable name="java.home"/>
+        <javaPropertyVariable name="groovyjar"/>
+    </environment>
+
     <application>
         <proactive base="root" relpath=".">
             <configuration>
+                <java base="root" relpath="${java.home}/bin/java"/>
                 <applicationClasspath>
-                    <pathElement base="root" relpath="/home/youri/.gvm/groovy/current/lib/groovy-2.1.0.jar"/>
-                    <pathElement base="root" relpath="/home/youri/.gvm/groovy/current/lib/asm-4.0.jar"/>
+                    <pathElement base="root" relpath="${groovyjar}"/>
                 </applicationClasspath>
-                <log4jProperties base="proactive" relpath="log4j.properties"/>
+                <log4jProperties base="proactive" relpath="src/main/resources/log4j.properties"/>
             </configuration>
             <virtualNode id="RemoteExecutor" capacity="1">
                 <nodeProvider refid="local"/>

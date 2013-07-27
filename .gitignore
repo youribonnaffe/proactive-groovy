@@ -3,3 +3,5 @@ build/
 dist/
 *.iml
 logs.log
+out/
+.idea/

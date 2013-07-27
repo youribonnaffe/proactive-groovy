@@ -10,13 +10,14 @@ repositories {
 
 dependencies {
     compile fileTree(dir: "dist/lib", include: '*.jar')
-    compile 'org.codehaus.groovy:groovy-all:2.0.5'
     compile 'org.slf4j:slf4j-api:1.5.3' // used by jetty
+    compile 'org.codehaus.groovy:groovy-all:2.1.0'
+    compile "org.codehaus.gpars:gpars:1.0.0"
 }
 
 task libs(type: Sync) {
     from project.ext.programmingLibDir
-    into "dist/lib"
+    into "dist/lib/"
 }
 compileJava.dependsOn(libs)
 compileGroovy.dependsOn(libs)
@@ -27,7 +28,7 @@ task wrapper(type: Wrapper) {
 
 def ProActiveTask = {
     classpath = sourceSets.main.runtimeClasspath
-    jvmArgs '-Djava.security.manager', '-Djava.security.policy=src/main/resources/proactive.java.policy', '-Dlog4j.configuration="file:./src/main/resources/log4j.properties'
+    jvmArgs '-Djava.security.manager', '-Djava.security.policy=src/main/resources/proactive.java.policy', '-Dgroovyjar=' + configurations.compile.find { it.name =~ /groovy/ }
 }
 
 task WhereIsWallyJava(dependsOn: 'classes', type: JavaExec, group: 'Run') {
@@ -38,12 +39,24 @@ task WhereIsWallyJava(dependsOn: 'classes', type: JavaExec, group: 'Run') {
 
 task WhereIsWallyGroovy(dependsOn: 'classes', type: JavaExec, group: 'Run') {
     main = 'blog1.where_is_wally'
-    description = 'Run WhereIsWally, Groovy code deploying a remote node, creating a remote active object and running code remotely'
+    description = 'Run where_is_wally, Groovy code deploying a remote node, creating a remote active object and running code remotely'
     configure ProActiveTask
 }
 
 task WallyMeetsClosure(dependsOn: 'classes', type: JavaExec, group: 'Run') {
     main = 'blog1.wally_meets_closure'
-    description = 'Run WhereIsWally, Groovy code demonstrating the execution of a remote closure'
+    description = 'Run wally_meets_closure, Groovy code demonstrating the execution of a remote closure'
+    configure ProActiveTask
+}
+
+task WallyAndHisFriends(dependsOn: 'classes', type: JavaExec, group: 'Run') {
+    main = 'blog2.wally_and_his_friends'
+    description = 'Run wally_and_his_friends'
+    configure ProActiveTask
+}
+
+task WallyAndHisFriendsInWonderland(dependsOn: 'classes', type: JavaExec, group: 'Run') {
+    main = 'blog2.wally_and_his_friends_in_wonderland'
+    description = 'Run wally_and_his_friends_in_wonderland'
     configure ProActiveTask
 }
